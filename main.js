@@ -1,3 +1,5 @@
+import { Block } from "./GameObject/TerrainObject.js";
+
 const canvas = document.querySelector("#game");
 canvas.width = 300;
 canvas.height = 200;
@@ -5,25 +7,6 @@ const context = canvas.getContext('2d');
 
 let was = Date.now();
 const fpsMeter = document.querySelector("#fps");
-
-class Block {
-  constructor(x, y) {
-    this.width = 35;
-    this.height = 35;
-    this.x = x;
-    this.y = y;
-  }
-
-  get top() { return this.y }
-  get bottom() { return this.y + this.height }
-  get left() { return this.x }
-  get right() { return this.x + this.width }
-
-  set top(v) { this.y = v }
-  set bottom(v) { this.y = v - this.height }
-  set left(v) { this.x = v }
-  set right(v) { this.x = v - this.width }
-}
 
 const blocks = [
   new Block(100, 100),
@@ -34,7 +17,7 @@ const blocks = [
 class Hero {
   constructor(x, y) {
     this.width = 20;
-    this.height = 30;
+    this.height = 25;
     this.x = x;
     this.y = y;
     this.direction = "right";

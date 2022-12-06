@@ -1,13 +1,14 @@
 export class BasicObject {
-  constructor(x, y, w, h, name, updateFn, drawFn) {
+  constructor(x, y, w, h, name) {
     this.x = x;
     this.y = y;
     this.width = w;
     this.height = h;
     this.name = name;
-    this.updateFn = updateFn;
-    this.drawFn = drawFn;
   }
+
+  draw() { };
+  update() { };
 
   get top() { return this.y }
   get bottom() { return this.y + this.height }
