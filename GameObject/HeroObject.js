@@ -52,7 +52,7 @@ export class HeroObject extends MovingObject {
       this.xVel = 5;
     }
 
-    state.solidObjects.forEach(col => {
+    state.objManager.solidTerrain.forEach(col => {
       if (col.name === "block") {
         if (checkHorizontalCollision(this, col)) {
           if (this.xVel > 0) {

@@ -1,5 +1,6 @@
 import { Block } from "./GameObject/TerrainObject.js";
 import { HeroObject } from "./GameObject/HeroObject.js";
+import { ObjectManager } from "./ObjectManager.js";
 
 const canvas = document.querySelector("#game");
 canvas.width = 300;
@@ -9,14 +10,6 @@ const context = canvas.getContext('2d');
 let was = Date.now();
 const fpsMeter = document.querySelector("#fps");
 
-const blocks = [
-  new Block(100, 100),
-  new Block(135, 100),
-  new Block(100, 135),
-]
-
-const hero = new HeroObject(0, 0);
-
 const state = {
   keys: {
     up: false,
@@ -24,12 +17,13 @@ const state = {
     left: false,
     right: false,
   },
-  solidObjects: [
-    new Block(100, 100),
-    new Block(135, 100),
-    new Block(100, 135),
-  ]
-}
+  objManager: new ObjectManager(),
+};
+
+state.objManager.addObject(new HeroObject(0, 0), "player");
+state.objManager.addObject(new Block(100, 100), "solidTerrain");
+state.objManager.addObject(new Block(135, 100), "solidTerrain");
+state.objManager.addObject(new Block(100, 135), "solidTerrain");
 
 window.addEventListener("keydown", ({ code }) => {
   switch (code) {
@@ -81,11 +75,8 @@ function animate() {
   fpsMeter.innerHTML = Math.round(1000 / (now - was));
   was = now;
 
-  context.fillStyle = "blue";
-  blocks.forEach(block => context.fillRect(block.x, block.y, block.width, block.height))
-
-  hero.update(state);
-  hero.draw(context);
+  state.objManager.runUpdate(state);
+  state.objManager.runDraw(context);
 
   window.requestAnimationFrame(animate)
 }
