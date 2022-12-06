@@ -6,23 +6,57 @@ const context = canvas.getContext('2d');
 let was = Date.now();
 const fpsMeter = document.querySelector("#fps");
 
-const block = {
-  width: 35,
-  height: 35,
-  x: 130,
-  y: 70,
-};
+class Block {
+  constructor(x, y) {
+    this.width = 35;
+    this.height = 35;
+    this.x = x;
+    this.y = y;
+  }
 
-const hero = {
-  width: 20,
-  height: 30,
-  x: 0,
-  y: 0,
-  direction: "right",
-  draw: function (ctx) {
+  get top() { return this.y }
+  get bottom() { return this.y + this.height }
+  get left() { return this.x }
+  get right() { return this.x + this.width }
+
+  set top(v) { this.y = v }
+  set bottom(v) { this.y = v - this.height }
+  set left(v) { this.x = v }
+  set right(v) { this.x = v - this.width }
+}
+
+const blocks = [
+  new Block(100, 100),
+  new Block(135, 100),
+  new Block(100, 135),
+]
+
+class Hero {
+  constructor(x, y) {
+    this.width = 20;
+    this.height = 30;
+    this.x = x;
+    this.y = y;
+    this.direction = "right";
+    this.xVel = 0;
+    this.yVel = 0;
+  }
+
+  get top() { return this.y }
+  get bottom() { return this.y + this.height }
+  get left() { return this.x }
+  get right() { return this.x + this.width }
+
+  set top(v) { this.y = v }
+  set bottom(v) { this.y = v - this.height }
+  set left(v) { this.x = v }
+  set right(v) { this.x = v - this.width }
+
+  draw(ctx) {
     ctx.fillStyle = "green";
-    ctx.fillRect(hero.x, hero.y, hero.width, hero.height);
+    ctx.fillRect(this.x, this.y, this.width, this.height);
 
+    // dot to indicate facing direction
     ctx.fillStyle = "white";
     switch (this.direction) {
       case "right":
@@ -38,70 +72,113 @@ const hero = {
         ctx.fillRect(this.x + 8, this.y + 30, 2, 2);
         break;
     }
-  },
-  update: function () {
-    if (keys.right) {
-      this.direction = "right";
-      if (
-        this.x + this.width + 5 > block.x &&
-        this.x < block.x &&
-        (
-          (this.y > block.y && this.y < block.y + block.height) ||
-          (this.y + this.height < block.y + block.height && this.y + this.height > block.y)
-        )
-      ) {
-        this.x = block.x - this.width;
-      } else {
-        this.x += 5;
-      }
-    }
-    if (keys.left) {
-      this.direction = "left";
-      if (
-        this.x - 5 < block.x + block.width &&
-        this.x + this.width > block.x + block.width &&
-        (
-          (this.y > block.y && this.y < block.y + block.height) ||
-          (this.y + this.height < block.y + block.height && this.y + this.height > block.y)
-        )
-      ) {
-        this.x = block.x + block.width;
-      } else {
-        this.x -= 5;
-      }
-    }
-    if (keys.up) {
+  }
+
+  update() {
+    if (keys.up && keys.down || !keys.up && !keys.down) {
+      this.yVel = 0;
+    } else if (keys.up) {
       this.direction = "up";
-      if (
-        this.y - 5 < block.y + block.height &&
-        this.y + this.height > block.y + block.height &&
-        (
-          (this.x > block.x && this.x < block.x + block.width) ||
-          (this.x + this.width > block.x && this.x + this.width < block.x + block.width)
-        )
-      ) {
-        this.y = block.y + block.height
-      } else {
-        this.y -= 5
-      }
-    }
-    if (keys.down) {
+      this.yVel = -5;
+    } else if (keys.down) {
       this.direction = "down";
-      if (
-        this.y + this.height + 5 > block.y &&
-        this.y < block.y &&
-        (
-          (this.x > block.x && this.x < block.x + block.width) ||
-          (this.x + this.width > block.x && this.x + this.width < block.x + block.width)
-        )
-      ) {
-        this.y = block.y - this.height
-      } else {
-        this.y += 5
-      }
+      this.yVel = 5;
     }
+
+    if (keys.left && keys.right || !keys.left && !keys.right) {
+      this.xVel = 0;
+    } else if (keys.left) {
+      this.direction = "left";
+      this.xVel = -5;
+    } else if (keys.right) {
+      this.direction = "right";
+      this.xVel = 5;
+    }
+
+    blocks.forEach(block => {
+      if (checkHorizontalCollision(this, block)) {
+        if (this.xVel > 0) {
+          this.right = block.left;
+        } else if (this.xVel < 0) {
+          this.left = block.right;
+        };
+        this.xVel = 0;
+      }
+      if (checkVerticalCollision(this, block)) {
+        if (this.yVel > 0) {
+          this.bottom = block.top;
+        } else if (this.yVel < 0) {
+          this.top = block.bottom;
+        }
+        this.yVel = 0;
+      }
+    })
+
+
+    this.x += this.xVel;
+    this.y += this.yVel;
   }
 };
+
+function checkHorizontalCollision(obj1, obj2) {
+  if (obj1.xVel > 0) {
+    // Going right
+    if (
+      obj1.right + obj1.xVel > obj2.left &&
+      obj1.left + obj1.xVel < obj2.left &&
+      (
+        (obj1.bottom > obj2.top && obj1.bottom < obj2.bottom) ||
+        (obj1.top > obj2.top && obj1.top < obj2.bottom)
+      )
+    ) {
+      return true
+    }
+  } else if (obj1.xVel < 0) {
+    // Going left
+    if (
+      obj1.left + obj1.xVel < obj2.right &&
+      obj1.right + obj1.xVel > obj2.right &&
+      (
+        (obj1.bottom > obj2.top && obj1.bottom < obj2.bottom) ||
+        (obj1.top > obj2.top && obj1.top < obj2.bottom)
+      )
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
+function checkVerticalCollision(obj1, obj2) {
+  if (obj1.yVel > 0) {
+    // Going down
+    if (
+      obj1.bottom + obj1.yVel > obj2.top &&
+      obj1.top + obj1.yVel < obj2.top &&
+      (
+        (obj1.right > obj2.left && obj1.right < obj2.right) ||
+        (obj1.left > obj2.left && obj1.left < obj2.right)
+      )
+    ) {
+      return true
+    }
+  } else if (obj1.yVel < 0) {
+    // Going up
+    if (
+      obj1.top + obj1.yVel < obj2.bottom &&
+      obj1.bottom + obj1.yVel > obj2.bottom &&
+      (
+        (obj1.right > obj2.left && obj1.right < obj2.right) ||
+        (obj1.left > obj2.left && obj1.left < obj2.right)
+      )
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
+const hero = new Hero(0, 0);
 
 
 const keys = {
@@ -162,7 +239,7 @@ function animate() {
   was = now;
 
   context.fillStyle = "blue";
-  context.fillRect(block.x, block.y, block.width, block.height);
+  blocks.forEach(block => context.fillRect(block.x, block.y, block.width, block.height))
 
   hero.update();
   hero.draw(context);
