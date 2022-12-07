@@ -1,3 +1,4 @@
+// A simple object. Has basic dimensions and can be drawn.
 export class BasicObject {
   constructor(x, y, w, h, name) {
     this.x = x;

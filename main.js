@@ -1,6 +1,7 @@
-import { Block } from "./GameObject/TerrainObject.js";
-import { HeroObject } from "./GameObject/HeroObject.js";
+import { Block } from "./GameObject/Block.js";
+import { PlayerObject } from "./GameObject/PlayerObject.js";
 import { ObjectManager } from "./ObjectManager.js";
+import { Coin } from "./GameObject/Coin.js";
 
 const canvas = document.querySelector("#game");
 canvas.width = 300;
@@ -20,10 +21,15 @@ const state = {
   objManager: new ObjectManager(),
 };
 
-state.objManager.addObject(new HeroObject(0, 0), "player");
+state.objManager.addObject(new PlayerObject(0, 0), "player");
 state.objManager.addObject(new Block(100, 100), "solidTerrain");
 state.objManager.addObject(new Block(135, 100), "solidTerrain");
 state.objManager.addObject(new Block(100, 135), "solidTerrain");
+
+state.objManager.addObject(new Coin(200, 135), "collectables");
+state.objManager.addObject(new Coin(200, 100), "collectables");
+state.objManager.addObject(new Coin(200, 150), "collectables");
+state.objManager.addObject(new Coin(200, 50), "collectables");
 
 window.addEventListener("keydown", ({ code }) => {
   switch (code) {

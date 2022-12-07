@@ -1,11 +1,14 @@
 import { DEBUG_MODE } from "../globals.js";
+import { msg } from "../utils.js";
 
 import { checkHorizontalCollision, checkVerticalCollision } from "../collision.js";
 import { MovingObject } from "./MovingObject.js";
 
-export class HeroObject extends MovingObject {
+export class PlayerObject extends MovingObject {
   constructor(x, y) {
     super(x, y, 20, 25, "hero", "right", 0, 0);
+    this.xSpeed = 3;
+    this.ySpeed = 3;
   }
 
   draw(ctx) {
@@ -36,42 +39,50 @@ export class HeroObject extends MovingObject {
       this.yVel = 0;
     } else if (state.keys.up) {
       this.direction = "up";
-      this.yVel = -5;
+      this.yVel = -this.ySpeed;
     } else if (state.keys.down) {
       this.direction = "down";
-      this.yVel = 5;
+      this.yVel = this.ySpeed;
     };
 
     if (state.keys.left && state.keys.right || !state.keys.left && !state.keys.right) {
       this.xVel = 0;
     } else if (state.keys.left) {
       this.direction = "left";
-      this.xVel = -5;
+      this.xVel = -this.xSpeed;
     } else if (state.keys.right) {
       this.direction = "right";
-      this.xVel = 5;
+      this.xVel = this.xSpeed;
     }
 
-    state.objManager.solidTerrain.forEach(col => {
-      if (col.name === "block") {
-        if (checkHorizontalCollision(this, col)) {
-          if (this.xVel > 0) {
-            this.right = col.left;
-          } else if (this.xVel < 0) {
-            this.left = col.right;
-          };
-          this.xVel = 0;
+    state.objManager.solidTerrain.forEach(block => {
+      if (checkHorizontalCollision(this, block)) {
+        if (this.xVel > 0) {
+          this.right = block.left;
+        } else if (this.xVel < 0) {
+          this.left = block.right;
+        };
+        this.xVel = 0;
+      }
+      if (checkVerticalCollision(this, block)) {
+        if (this.yVel > 0) {
+          this.bottom = block.top;
+        } else if (this.yVel < 0) {
+          this.top = block.bottom;
         }
-        if (checkVerticalCollision(this, col)) {
-          if (this.yVel > 0) {
-            this.bottom = col.top;
-          } else if (this.yVel < 0) {
-            this.top = col.bottom;
-          }
-          this.yVel = 0;
+        this.yVel = 0;
+      }
+    });
+
+    state.objManager.collectables.forEach(col => {
+      if (checkHorizontalCollision(this, col) || checkVerticalCollision(this, col)) {
+        if (col.name === "coin") {
+          msg("Coin collected");
+          // console.log(col);
+          state.objManager.removeObject(col);
         }
       }
-    })
+    });
 
     this.x += this.xVel;
     this.y += this.yVel;

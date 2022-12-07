@@ -6,10 +6,12 @@ export class ObjectManager {
 
     this.player = [];
     this.solidTerrain = [];
+    this.collectables = [];
   }
 
   addObject(obj, layer) {
     obj.id = this.nextObjectId;
+    obj.layer = layer;
     this.nextObjectId++;
 
     switch (layer) {
@@ -18,6 +20,9 @@ export class ObjectManager {
         break;
       case "solidTerrain":
         this.solidTerrain.push(obj);
+        break;
+      case "collectables":
+        this.collectables.push(obj);
         break;
       default:
         msg("No such layer: " + layer);
@@ -32,10 +37,13 @@ export class ObjectManager {
         this.player = this.player.filter(compareId);
         break;
       case "solidTerrain":
-        this.player = this.solidTerrain.filter(compareId);
+        this.solidTerrain = this.solidTerrain.filter(compareId);
+        break;
+      case "collectables":
+        this.collectables = this.collectables.filter(compareId);
         break;
       default:
-        msg("No such layer " + layer);
+        msg("No such layer " + obj.layer);
         break;
     }
   }
@@ -46,6 +54,7 @@ export class ObjectManager {
 
   runDraw(ctx) {
     this.solidTerrain.forEach(s => s.draw(ctx));
+    this.collectables.forEach(c => c.draw(ctx));
     this.player.forEach(p => p.draw(ctx));
   }
 }

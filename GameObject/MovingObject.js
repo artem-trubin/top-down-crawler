@@ -1,3 +1,5 @@
+// An extension to BasicObject, includes movement variables/
+
 import { BasicObject } from "./BasicObject.js";
 
 export class MovingObject extends BasicObject {
