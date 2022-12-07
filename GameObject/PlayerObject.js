@@ -55,25 +55,6 @@ export class PlayerObject extends MovingObject {
       this.xVel = this.xSpeed;
     }
 
-    state.objManager.solidTerrain.forEach(block => {
-      if (checkHorizontalCollision(this, block)) {
-        if (this.xVel > 0) {
-          this.right = block.left;
-        } else if (this.xVel < 0) {
-          this.left = block.right;
-        };
-        this.xVel = 0;
-      }
-      if (checkVerticalCollision(this, block)) {
-        if (this.yVel > 0) {
-          this.bottom = block.top;
-        } else if (this.yVel < 0) {
-          this.top = block.bottom;
-        }
-        this.yVel = 0;
-      }
-    });
-
     state.objManager.collectables.forEach(col => {
       if (checkHorizontalCollision(this, col) || checkVerticalCollision(this, col)) {
         if (col.name === "coin") {
@@ -84,7 +65,6 @@ export class PlayerObject extends MovingObject {
       }
     });
 
-    this.x += this.xVel;
-    this.y += this.yVel;
+    super.update(state);
   }
 }

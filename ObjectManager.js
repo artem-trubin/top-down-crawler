@@ -6,6 +6,7 @@ export class ObjectManager {
 
     this.player = [];
     this.solidTerrain = [];
+    this.interactables = [];
     this.collectables = [];
   }
 
@@ -23,6 +24,9 @@ export class ObjectManager {
         break;
       case "collectables":
         this.collectables.push(obj);
+        break;
+      case "interactables":
+        this.interactables.push(obj);
         break;
       default:
         msg("No such layer: " + layer);
@@ -42,6 +46,9 @@ export class ObjectManager {
       case "collectables":
         this.collectables = this.collectables.filter(compareId);
         break;
+      case "interactables":
+        this.interactables = this.interactables.filter(compareId);
+        break;
       default:
         msg("No such layer " + obj.layer);
         break;
@@ -50,11 +57,13 @@ export class ObjectManager {
 
   runUpdate(state) {
     this.player.forEach(p => p.update(state));
+    this.interactables.forEach(i => i.update(state));
   }
 
   runDraw(ctx) {
     this.solidTerrain.forEach(s => s.draw(ctx));
     this.collectables.forEach(c => c.draw(ctx));
+    this.interactables.forEach(i => i.draw(ctx));
     this.player.forEach(p => p.draw(ctx));
   }
 }
