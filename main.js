@@ -17,6 +17,7 @@ const state = {
     down: false,
     left: false,
     right: false,
+    space: false,
   },
   objManager: new ObjectManager(),
 };
@@ -49,6 +50,9 @@ window.addEventListener("keydown", ({ code }) => {
     case "ArrowDown":
       state.keys.down = true;
       break;
+    case "Space":
+      state.keys.space = true;
+      break;
   }
 })
 
@@ -69,6 +73,9 @@ window.addEventListener("keyup", ({ code }) => {
     case "KeyS":
     case "ArrowDown":
       state.keys.down = false;
+      break;
+    case "Space":
+      state.keys.space = false;
       break;
   }
 })

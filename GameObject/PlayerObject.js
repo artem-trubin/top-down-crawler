@@ -3,12 +3,14 @@ import { msg } from "../utils.js";
 
 import { checkHorizontalCollision, checkVerticalCollision } from "../collision.js";
 import { MovingObject } from "./MovingObject.js";
+import { Projectile } from "./Projectile.js";
 
 export class PlayerObject extends MovingObject {
   constructor(x, y) {
-    super(x, y, 20, 25, "hero", "right", 0, 0);
+    super(x, y, 20, 25, "hero", 0, 0);
     this.xSpeed = 3;
     this.ySpeed = 3;
+    this.direction = "right";
   }
 
   draw(ctx) {
@@ -53,6 +55,46 @@ export class PlayerObject extends MovingObject {
     } else if (state.keys.right) {
       this.direction = "right";
       this.xVel = this.xSpeed;
+    }
+
+    if (state.keys.space) {
+      const projectileProfile = {};
+      switch (this.direction) {
+        case "right":
+          projectileProfile.x = this.right;
+          projectileProfile.y = this.y + 5;
+          projectileProfile.xVel = 6;
+          projectileProfile.yVel = 0;
+          break;
+        case "left":
+          projectileProfile.x = this.left;
+          projectileProfile.y = this.y + 5;
+          projectileProfile.xVel = -6;
+          projectileProfile.yVel = 0;
+          break;
+        case "up":
+          projectileProfile.x = this.x + 5;
+          projectileProfile.y = this.top;
+          projectileProfile.xVel = 0;
+          projectileProfile.yVel = -6;
+          break;
+        case "down":
+          projectileProfile.x = this.x + 5;
+          projectileProfile.y = this.bottom;
+          projectileProfile.xVel = 0;
+          projectileProfile.yVel = 6;
+          break;
+      }
+      state.objManager.addObject(
+        new Projectile(
+          projectileProfile.x,
+          projectileProfile.y,
+          projectileProfile.xVel,
+          projectileProfile.yVel,
+          "bullet",
+        ),
+        "interactables"
+      );
     }
 
     state.objManager.collectables.forEach(col => {
