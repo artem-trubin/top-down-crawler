@@ -3,7 +3,7 @@ export function checkHorizontalCollision(obj1, obj2) {
     // Going right
     if (
       obj1.right + obj1.xVel > obj2.left &&
-      obj1.left + obj1.xVel < obj2.left
+      obj1.left < obj2.left
     ) {
       if (obj1.height < obj2.height) {
         if (
@@ -25,7 +25,7 @@ export function checkHorizontalCollision(obj1, obj2) {
     // Going left
     if (
       obj1.left + obj1.xVel < obj2.right &&
-      obj1.right + obj1.xVel > obj2.right
+      obj1.right > obj2.right
     ) {
       if (obj1.height < obj2.height) {
         if (
@@ -52,7 +52,7 @@ export function checkVerticalCollision(obj1, obj2) {
     // Going down
     if (
       obj1.bottom + obj1.yVel > obj2.top &&
-      obj1.top + obj1.yVel < obj2.top
+      obj1.top < obj2.top
     ) {
       if (obj1.width < obj2.width) {
         if (
@@ -76,7 +76,7 @@ export function checkVerticalCollision(obj1, obj2) {
     // Going up
     if (
       obj1.top + obj1.yVel < obj2.bottom &&
-      obj1.bottom + obj1.yVel > obj2.bottom
+      obj1.bottom > obj2.bottom
     ) {
       if (obj1.width < obj2.width) {
         if (
